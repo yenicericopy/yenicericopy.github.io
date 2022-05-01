@@ -7,7 +7,7 @@ on:
   pull_request:
 
 jobs:
-  deploy:
+  hugo_blog_generate:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
@@ -31,4 +31,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./public
           destination_dir: blog
-          
+          keep_files: false
