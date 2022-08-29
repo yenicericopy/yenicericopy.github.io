@@ -107,18 +107,15 @@
 }
 
 .qr {
-  background-image: url(https://http.cat/100);
+  /* background-image: url(https://http.cat/100); */
   /* display: inline; */
-
+  margin: auto 0;
   flex: 1; /* height: 100%; */
-  flex-shrink: 4;
-  flex-grow: 1;
-
+  flex-shrink: 0;
+  flex-grow: 2;
   /* width: 50%; */
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position-x: center;
-  background-position-y: center;
+  height: 50%;
+  /* width: 50%; */
   /* width: 200px; */
 }
 
@@ -129,7 +126,7 @@
   /* width: 600px; */
   flex: 1;
   flex-grow: 2;
-  flex-shrink: 2;
+  flex-shrink: 8;
 }
 
 @media screen and (max-width: 600px) {

@@ -1,6 +1,9 @@
 import "./App.css";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { QRCodeCanvas, QRCodeSVG } from "qrcode.react";
+import "typesocket";
+import { TypeSocket } from "typesocket";
 // const peer = new RTCPeerConnection({
 //   iceCandidatePoolSize: 30,
 //   iceServers: [
@@ -10,17 +13,52 @@ import { v4 as uuidv4 } from "uuid";
 //   ],
 // });
 
+const sleep = (time) => {
+  return new Promise((resolve) => {
+    setTimeout(resolve, time);
+  });
+};
+type servermsgmodel = {
+  key: string;
+  value: string;
+};
+
 function App(): JSX.Element {
   const [Peeroffer, setPeeroffer] = useState({} as msg);
-  // useEffect(() => {
-  //   peer.createOffer().then((init) => {
-  //     setPeeroffer({
-  //       uuid: uuidv4(),
-  //       content: JSON.stringify(init),
-  //       side: "center",
-  //     } as msg);
-  //   });
-  // }, []);
+  const [Websocketuuid, setWebsocketuuid] = useState("");
+  const [Msg, setMsg] = useState({} as msg);
+  const awebsocket = useRef() as React.MutableRefObject<
+    TypeSocket<servermsgmodel>
+  >;
+  useEffect(() => {
+    let uuid = uuidv4();
+    awebsocket.current = new TypeSocket<servermsgmodel>(
+      "wss://yenicericopybackend.herokuapp.com/" + uuid,
+      {
+        retryOnClose: true,
+        maxRetries: 1,
+      }
+    );
+    awebsocket.current.on("message", (msg) => {
+      console.log("got data")
+      setMsg({
+        content: msg.value,
+        side: "center",
+        uuid: uuidv4(),
+      });
+    });
+    awebsocket.current.on("connected", () => {
+      awebsocket.current.send({
+        key: uuid,
+        value: "it will work",
+      });
+      console.log("sent")
+    });
+    awebsocket.current.connect();
+
+    setWebsocketuuid(uuid);
+  }, []);
+
   return (
     <div className="App">
       <Topbar></Topbar>
@@ -48,9 +86,15 @@ function App(): JSX.Element {
               side: "right",
             },
             Peeroffer,
+            Msg,
           ]}
         ></Chatelem>
-        <div className="qr"></div>
+        {/* <AwesomeQRCode options={{text:"a"}}></AwesomeQRCode> */}
+        <QRCodeSVG
+          includeMargin={true}
+          value={uuidv4()}
+          className="qr"
+        ></QRCodeSVG>
       </div>
     </div>
   );
@@ -141,7 +185,7 @@ function Topbar() {
   return (
     <div className="topbar">
       <a
-        href="patotoland.com"
+        href="https://patotoland.com"
         className="topbarclick topbatleftmost anchorcheck"
       >
         patotoland
